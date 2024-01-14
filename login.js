@@ -32,34 +32,27 @@ const PostSignIn = () => {
 };
 
 const responseData = (result) => {
-  if (result.token) {
-    // Jika memiliki token, simpan token di cookie
-    setCookieWithExpireHour("Authorization", result.token, 2);
-    // Tampilkan SweetAlert berhasil login
-    Swal.fire({
-      icon: "success",
-      title: "Login Successful",
-      text: "You have successfully logged in...",
-    }).then(() => {
-      // Redirect based on the user role
-      if (result.role === "pengguna") {
-        window.location.href = "./pengguna/index.html";
-      } else if (result.role === "admin") {
-        window.location.href = "./admin/index.html";
-      } else {
-        // Handle other roles or scenarios if needed
-        // For example, redirect to a default page or show an error message
-        console.error("Unknown user role:", result.role);
-      }
-    });
-  } else {
-    // Jika tidak memiliki token, tampilkan SweetAlert pesan kesalahan
-    Swal.fire({
-      icon: "error",
-      title: "Login Failed",
-      text: result.message,
-    });
-  }
+    if (result.token) {
+        setCookieWithExpireHour("Authorization", result.token, 2);
+
+        // Use SweetAlert for success message
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil Masuk',
+            text: "Selamat Datang di Keekonseling",
+        }).then(() => {
+            // Redirect to the dashboard page
+            window.location.href = " ./dashboard.html";
+        });
+    } else {
+        // Use SweetAlert for error message
+        Swal.fire({
+            icon: 'error',
+            title: 'Gagal Masuk',
+            text: result.message,
+        });
+    }
+
 };
 
 window.PostSignIn = PostSignIn;
