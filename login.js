@@ -1,9 +1,11 @@
 import { getValue } from "https://jscroot.github.io/element/croot.js";
 import { setCookieWithExpireHour } from "https://jscroot.github.io/cookie/croot.js";
 
-function postWithToken(target_url, datajson, responseFunction) {
+function postWithToken(target_url, data, responseFunction) {
   var myHeaders = new Headers();
   myHeaders.append("Content-Type", "application/json");
+
+  var raw = JSON.stringify(data);
 
   var requestOptions = {
     method: "POST",
