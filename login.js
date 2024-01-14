@@ -1,11 +1,11 @@
 import { getValue } from "https://jscroot.github.io/element/croot.js";
 import { setCookieWithExpireHour } from "https://jscroot.github.io/cookie/croot.js";
 
-function postWithToken(target_url, data, responseFunction) {
+function postWithToken(target_url, datajson, responseFunction) {
   var myHeaders = new Headers();
   myHeaders.append("Content-Type", "application/json");
 
-  var raw = JSON.stringify(data);
+  var raw = JSON.stringify(datajson);
 
   var requestOptions = {
     method: "POST",
@@ -20,37 +20,46 @@ function postWithToken(target_url, data, responseFunction) {
     .catch((error) => console.log("error", error));
 }
 
-const Login = () => {
-    const target_url = "https://asia-southeast2-global-student-401904.cloudfunctions.net/pasetolog";
-    const data = {
-        "username": getValue("username"),
-        "password": getValue("password"),
-    };
-    postWithToken(target_url, data, responseData);
-}
+const PostSignIn = () => {
+  const target_url =
+    "https://asia-southeast2-global-student-401904.cloudfunctions.net/pasetolog";
+  const datainjson = {
+    email: getValue("username"),
+    password: getValue("password"),
+  };
 
-function responseData(result) {
-    if (result.token) {
-        setCookieWithExpireHour("Authorization", result.token, 2);
+  postWithToken(target_url, datainjson, responseData);
+};
 
-        // Use SweetAlert for success message
-        Swal.fire({
-            icon: 'success',
-            title: 'Berhasil Masuk',
-            text: "Selamat Datang di KeeKonseling",
-        }).then(() => {
-            // Redirect to the dashboard page
-            window.location.href = " ./dashboard.html";
-        });
-    } else {
-        // Use SweetAlert for error message
-        Swal.fire({
-            icon: 'error',
-            title: 'Gagal Masuk',
-            text: result.message,
-        });
-    }
-}
+const responseData = (result) => {
+  if (result.token) {
+    // Jika memiliki token, simpan token di cookie
+    setCookieWithExpireHour("Authorization", result.token, 2);
+    // Tampilkan SweetAlert berhasil login
+    Swal.fire({
+      icon: "success",
+      title: "Login Successful",
+      text: "You have successfully logged in...",
+    }).then(() => {
+      // Redirect based on the user role
+      if (result.role === "pengguna") {
+        window.location.href = "./pengguna/index.html";
+      } else if (result.role === "admin") {
+        window.location.href = "./admin/index.html";
+      } else {
+        // Handle other roles or scenarios if needed
+        // For example, redirect to a default page or show an error message
+        console.error("Unknown user role:", result.role);
+      }
+    });
+  } else {
+    // Jika tidak memiliki token, tampilkan SweetAlert pesan kesalahan
+    Swal.fire({
+      icon: "error",
+      title: "Login Failed",
+      text: result.message,
+    });
+  }
+};
 
-
-window.Login = Login;
+window.PostSignIn = PostSignIn;
